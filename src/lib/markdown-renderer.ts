@@ -38,20 +38,19 @@ export async function renderMarkdown(markdown: string): Promise<MarkdownRenderRe
 		if (token.type === 'code') {
 			const codeToken = token as Tokens.Code
 			const originalCode = codeToken.text
+			const key = `__SHIKI_CODE_${codeBlockMap.size}__`
 			try {
 				const html = await codeToHtml(originalCode, {
 					lang: codeToken.lang || 'text',
 					theme: 'one-light'
 				})
-				const key = `__SHIKI_CODE_${codeBlockMap.size}__`
 				codeBlockMap.set(key, { html, original: originalCode })
-				codeToken.text = key
-			} catch {
-				// Keep original if highlighting fails
-				const key = `__SHIKI_CODE_${codeBlockMap.size}__`
+			} catch (e) {
+				// Keep original if highlighting fails (e.g. in Workers environment)
+				console.warn('Shiki highlighting failed:', e)
 				codeBlockMap.set(key, { html: '', original: originalCode })
-				codeToken.text = key
 			}
+			codeToken.text = key
 		}
 	}
 

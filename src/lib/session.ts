@@ -1,10 +1,17 @@
 // 简单的签名 session（使用 HMAC-SHA256）
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 export const SESSION_COOKIE = 'session'
 
 // 用 GITHUB_CLIENT_SECRET 作为签名密钥
-function getSecret(): string {
-	return process.env.GITHUB_CLIENT_SECRET || 'dev-secret-key'
+async function getSecret(): Promise<string> {
+	try {
+		const ctx = await getCloudflareContext({ async: true })
+		const env = ctx.env as { GITHUB_CLIENT_SECRET?: string }
+		return env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET || 'dev-secret-key'
+	} catch {
+		return process.env.GITHUB_CLIENT_SECRET || 'dev-secret-key'
+	}
 }
 
 interface SessionData {
@@ -43,10 +50,11 @@ export async function signSession(data: SessionData): Promise<string> {
 	const payloadStr = JSON.stringify(payload)
 	const payloadB64 = base64Encode(payloadStr)
 
+	const secret = await getSecret()
 	const encoder = new TextEncoder()
 	const key = await crypto.subtle.importKey(
 		'raw',
-		encoder.encode(getSecret()),
+		encoder.encode(secret),
 		{ name: 'HMAC', hash: 'SHA-256' },
 		false,
 		['sign']
@@ -64,10 +72,11 @@ export async function verifySession(session: string): Promise<SessionData | null
 		const [payloadB64, sigB64] = session.split('.')
 		if (!payloadB64 || !sigB64) return null
 
+		const secret = await getSecret()
 		const encoder = new TextEncoder()
 		const key = await crypto.subtle.importKey(
 			'raw',
-			encoder.encode(getSecret()),
+			encoder.encode(secret),
 			{ name: 'HMAC', hash: 'SHA-256' },
 			false,
 			['verify']

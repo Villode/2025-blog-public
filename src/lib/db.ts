@@ -1,8 +1,13 @@
 // D1 数据库操作
 // D1 ID: 69297e0b-6da4-4cb8-b349-80891d0fbb4a
 
-import { getCloudflareContext } from '@opennextjs/cloudflare'
 import type { DbUser } from '@/hooks/use-user'
+
+// 动态导入 getCloudflareContext 避免构建时问题
+async function getCloudflareContext() {
+	const mod = await import('@opennextjs/cloudflare')
+	return mod.getCloudflareContext()
+}
 
 // D1 数据库类型
 export interface D1Database {

@@ -1,10 +1,25 @@
 // 文章相关的数据库和 R2 操作
-import type { D1Database, R2Bucket } from '@cloudflare/workers-types'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
-// 动态导入 getCloudflareContext 避免构建时问题
-async function getCloudflareContext() {
-	const mod = await import('@opennextjs/cloudflare')
-	return mod.getCloudflareContext()
+// D1 和 R2 类型
+interface D1Database {
+	prepare(query: string): D1PreparedStatement
+}
+interface D1PreparedStatement {
+	bind(...values: unknown[]): D1PreparedStatement
+	first<T = unknown>(): Promise<T | null>
+	run(): Promise<unknown>
+	all<T = unknown>(): Promise<{ results?: T[] }>
+}
+interface R2Bucket {
+	get(key: string): Promise<R2Object | null>
+	put(key: string, value: string | ArrayBuffer, options?: { httpMetadata?: { contentType: string } }): Promise<void>
+	delete(key: string): Promise<void>
+}
+interface R2Object {
+	body: ReadableStream
+	text(): Promise<string>
+	httpMetadata?: { contentType?: string }
 }
 
 export interface Article {
@@ -59,8 +74,9 @@ function rowToArticle(row: ArticleRow): Article {
 
 // 获取 D1 和 R2
 async function getBindings(): Promise<{ db: D1Database | null; bucket: R2Bucket | null }> {
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	try {
-		const ctx = await getCloudflareContext()
+		const ctx = await getCloudflareContext({ async: true })
 		const env = ctx.env as { DB?: D1Database; BUCKET?: R2Bucket }
 		return {
 			db: env.DB || null,

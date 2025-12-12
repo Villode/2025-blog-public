@@ -1,19 +1,14 @@
 // R2 图片代理 API
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 export const runtime = 'edge'
-
-// 动态导入 getCloudflareContext 避免构建时问题
-async function getCloudflareContext() {
-	const mod = await import('@opennextjs/cloudflare')
-	return mod.getCloudflareContext()
-}
 
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
 	const { path } = await params
 	const key = path.join('/')
 
 	try {
-		const ctx = await getCloudflareContext()
+		const ctx = await getCloudflareContext({ async: true })
 		const env = ctx.env as { BUCKET?: any }
 		const bucket = env.BUCKET
 

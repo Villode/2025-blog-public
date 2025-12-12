@@ -1,21 +1,19 @@
-// Token 验证 API
+// Session 验证 API
 import { NextRequest, NextResponse } from 'next/server'
-import { validTokens } from '../callback/route'
+import { verifySession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
 export async function POST(request: NextRequest) {
 	try {
-		const { token } = await request.json()
+		const session = request.cookies.get(SESSION_COOKIE)?.value
 
-		if (!token) {
+		if (!session) {
 			return NextResponse.json({ valid: false })
 		}
 
-		const session = validTokens.get(token)
-		const valid = !!session && Date.now() < session.expiresAt
-
-		return NextResponse.json({ valid })
+		const data = await verifySession(session)
+		return NextResponse.json({ valid: !!data })
 	} catch (error) {
 		console.error('Verify error:', error)
 		return NextResponse.json({ valid: false })

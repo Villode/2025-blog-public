@@ -3,25 +3,21 @@
 import Link from 'next/link'
 import dayjs from 'dayjs'
 import { motion } from 'motion/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { ANIMATION_DELAY, INIT_DELAY } from '@/consts'
 import ShortLineSVG from '@/svgs/short-line.svg'
 import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
 import { useReadArticles } from '@/hooks/use-read-articles'
 import JuejinSVG from '@/svgs/juejin.svg'
-import { useAuthStore } from '@/hooks/use-auth'
-import { readFileAsText } from '@/lib/file-utils'
+import { useAdmin } from '@/hooks/use-admin'
 import { cn } from '@/lib/utils'
-import { batchDeleteBlogs } from './services/batch-delete-blogs'
 import { Check } from 'lucide-react'
 
 export default function BlogPage() {
 	const { items, loading } = useBlogIndex()
 	const { isRead } = useReadArticles()
-	const { isAuth, setPrivateKey } = useAuthStore()
-
-	const keyInputRef = useRef<HTMLInputElement>(null)
+	const { isAdmin } = useAdmin()
 	const [editMode, setEditMode] = useState(false)
 	const [editableItems, setEditableItems] = useState<BlogIndexItem[]>([])
 	const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set())
@@ -53,7 +49,6 @@ export default function BlogPage() {
 	}, [displayItems])
 
 	const selectedCount = selectedSlugs.size
-	const buttonText = isAuth ? '保存' : '导入密钥'
 
 	const toggleEditMode = useCallback(() => {
 		if (editMode) {
@@ -113,7 +108,15 @@ export default function BlogPage() {
 
 		try {
 			setSaving(true)
-			await batchDeleteBlogs(removedSlugs)
+			// 批量删除文章
+			for (const slug of removedSlugs) {
+				const res = await fetch(`/api/articles/${slug}`, { method: 'DELETE' })
+				if (!res.ok) {
+					const data = await res.json()
+					throw new Error(data.error || `删除 ${slug} 失败`)
+				}
+			}
+			toast.success('删除成功')
 			setEditMode(false)
 			setSelectedSlugs(new Set())
 		} catch (error: any) {
@@ -125,41 +128,17 @@ export default function BlogPage() {
 	}, [editableItems, items])
 
 	const handleSaveClick = useCallback(() => {
-		if (!isAuth) {
-			keyInputRef.current?.click()
+		if (!isAdmin) {
+			toast.error('请先登录')
 			return
 		}
 		void handleSave()
-	}, [handleSave, isAuth])
+	}, [handleSave, isAdmin])
 
-	const handlePrivateKeySelection = useCallback(
-		async (file: File) => {
-			try {
-				const pem = await readFileAsText(file)
-				setPrivateKey(pem)
-				toast.success('密钥导入成功，请再次点击保存')
-			} catch (error) {
-				console.error(error)
-				toast.error('读取密钥失败')
-			}
-		},
-		[setPrivateKey]
-	)
+	const buttonText = '保存'
 
 	return (
 		<>
-			<input
-				ref={keyInputRef}
-				type='file'
-				accept='.pem'
-				className='hidden'
-				onChange={async e => {
-					const f = e.target.files?.[0]
-					if (f) await handlePrivateKeySelection(f)
-					if (e.currentTarget) e.currentTarget.value = ''
-				}}
-			/>
-
 			<div className='flex flex-col items-center justify-center gap-6 px-6 pt-32 pb-12 max-sm:pt-28'>
 				<>
 					{years.map((year, index) => (

@@ -14,7 +14,7 @@ export type LoadedBlog = {
 }
 
 /**
- * Load blog data from public/blogs/{slug}
+ * Load blog data from API
  * Used by both view page and edit page
  */
 export async function loadBlog(slug: string): Promise<LoadedBlog> {
@@ -22,28 +22,24 @@ export async function loadBlog(slug: string): Promise<LoadedBlog> {
 		throw new Error('Slug is required')
 	}
 
-	// Load config.json
-	let config: BlogConfig = {}
-	const configRes = await fetch(`/blogs/${encodeURIComponent(slug)}/config.json`)
-	if (configRes.ok) {
-		try {
-			config = await configRes.json()
-		} catch {
-			config = {}
-		}
-	}
-
-	// Load index.md
-	const mdRes = await fetch(`/blogs/${encodeURIComponent(slug)}/index.md`)
-	if (!mdRes.ok) {
+	const res = await fetch(`/api/articles/${encodeURIComponent(slug)}`)
+	if (!res.ok) {
 		throw new Error('Blog not found')
 	}
-	const markdown = await mdRes.text()
+
+	const data = await res.json()
+	const { article, content } = data
 
 	return {
-		slug,
-		config,
-		markdown,
-		cover: config.cover
+		slug: article.slug,
+		config: {
+			title: article.title,
+			tags: article.tags || [],
+			date: article.publishedAt || article.createdAt,
+			summary: article.summary,
+			cover: article.coverKey ? `/api/images/${article.coverKey}` : undefined
+		},
+		markdown: content || '',
+		cover: article.coverKey ? `/api/images/${article.coverKey}` : undefined
 	}
 }

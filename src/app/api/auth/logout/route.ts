@@ -1,18 +1,11 @@
 // 登出
-import { NextRequest, NextResponse } from 'next/server'
-import { validTokens } from '../callback/route'
+import { NextResponse } from 'next/server'
+import { SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
-export async function POST(request: NextRequest) {
-	const token = request.cookies.get('admin_token')?.value
-
-	if (token) {
-		validTokens.delete(token)
-	}
-
+export async function POST() {
 	const response = NextResponse.json({ success: true })
-	response.cookies.delete('admin_token')
-
+	response.cookies.delete(SESSION_COOKIE)
 	return response
 }

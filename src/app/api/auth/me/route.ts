@@ -1,25 +1,24 @@
 // 获取当前用户信息
 import { NextRequest, NextResponse } from 'next/server'
-import { validTokens } from '../callback/route'
+import { verifySession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
 	try {
-		const token = request.cookies.get('admin_token')?.value
+		const session = request.cookies.get(SESSION_COOKIE)?.value
 
-		if (!token) {
+		if (!session) {
 			return NextResponse.json({ user: null, authenticated: false })
 		}
 
-		const session = validTokens.get(token)
-		if (!session || Date.now() > session.expiresAt) {
-			validTokens.delete(token)
+		const data = await verifySession(session)
+		if (!data) {
 			return NextResponse.json({ user: null, authenticated: false })
 		}
 
 		return NextResponse.json({
-			user: { id: session.username, role: 'admin' },
+			user: { id: data.username, role: data.role },
 			authenticated: true
 		})
 	} catch (error) {

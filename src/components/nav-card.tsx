@@ -112,32 +112,38 @@ export default function NavCard() {
 	const styles = cardStyles.navCard
 	const hiCardStyles = cardStyles.hiCard
 
-	// 三次点击头像弹出认证
+	// 点击头像弹出弹窗
 	const [clickCount, setClickCount] = useState(0)
-	const [showAuthDialog, setShowAuthDialog] = useState(false)
+	const [showDialog, setShowDialog] = useState(false)
 	const clickTimerRef = useRef<NodeJS.Timeout | null>(null)
 
 	const handleAvatarClick = (e: React.MouseEvent) => {
 		e.preventDefault()
 		e.stopPropagation()
 		
+		// 已登录：直接弹出管理面板
+		if (isAdmin) {
+			setShowDialog(true)
+			return
+		}
+		
+		// 未登录：三次点击弹出登录
 		setClickCount(prev => {
 			const newCount = prev + 1
 			if (newCount >= 3) {
-				setShowAuthDialog(true)
+				setShowDialog(true)
 				return 0
 			}
 			return newCount
 		})
 
-		// 重置计时器
 		if (clickTimerRef.current) clearTimeout(clickTimerRef.current)
 		clickTimerRef.current = setTimeout(() => setClickCount(0), 1000)
 	}
 
 	const handleLogout = async () => {
 		await logout()
-		setShowAuthDialog(false)
+		setShowDialog(false)
 		toast.success('已退出登录')
 	}
 
@@ -196,46 +202,96 @@ export default function NavCard() {
 	if (show && !isFullscreen)
 		return (
 			<>
-			{/* 认证弹窗 */}
+			{/* 弹窗：登录 或 管理面板 */}
 			<AnimatePresence>
-				{showAuthDialog && (
+				{showDialog && (
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						className='fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm'
-						onClick={() => setShowAuthDialog(false)}>
+						onClick={() => setShowDialog(false)}>
 						<motion.div
 							initial={{ scale: 0.9, opacity: 0 }}
 							animate={{ scale: 1, opacity: 1 }}
 							exit={{ scale: 0.9, opacity: 0 }}
 							onClick={e => e.stopPropagation()}
 							className='relative w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-xl'>
-							<button onClick={() => setShowAuthDialog(false)} className='absolute top-4 right-4 text-gray-400 hover:text-gray-600'>
+							<button onClick={() => setShowDialog(false)} className='absolute top-4 right-4 text-gray-400 hover:text-gray-600'>
 								<X size={20} />
 							</button>
 							
-							<h3 className='mb-4 text-lg font-semibold'>{isAdmin ? '已登录' : '管理员登录'}</h3>
-							
 							{isAdmin ? (
-								<div className='space-y-4'>
-									<p className='text-sm text-gray-600'>你已通过 GitHub 登录，可以编辑网站内容。</p>
-									<button onClick={handleLogout} className='w-full rounded-xl bg-red-50 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100'>
-										退出登录
-									</button>
-								</div>
+								<>
+									<h3 className='mb-4 text-lg font-semibold'>管理面板</h3>
+									<div className='space-y-3'>
+										<Link 
+											href='/write' 
+											onClick={() => setShowDialog(false)}
+											className='flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-3 text-left transition hover:from-amber-100 hover:to-orange-100'>
+											<span className='flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white'>
+												<svg className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+													<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
+												</svg>
+											</span>
+											<div>
+												<div className='font-medium text-gray-900'>写文章</div>
+												<div className='text-xs text-gray-500'>创建新的博客文章</div>
+											</div>
+										</Link>
+										
+										<Link 
+											href='/blog' 
+											onClick={() => setShowDialog(false)}
+											className='flex w-full items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 text-left transition hover:bg-gray-100'>
+											<span className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600'>
+												<svg className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+													<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' />
+												</svg>
+											</span>
+											<div>
+												<div className='font-medium text-gray-900'>管理文章</div>
+												<div className='text-xs text-gray-500'>编辑或删除已有文章</div>
+											</div>
+										</Link>
+										
+										<Link 
+											href='/pictures' 
+											onClick={() => setShowDialog(false)}
+											className='flex w-full items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 text-left transition hover:bg-gray-100'>
+											<span className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600'>
+												<svg className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+													<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
+												</svg>
+											</span>
+											<div>
+												<div className='font-medium text-gray-900'>管理相册</div>
+												<div className='text-xs text-gray-500'>上传和管理图片</div>
+											</div>
+										</Link>
+									</div>
+									
+									<div className='mt-4 border-t pt-4'>
+										<button onClick={handleLogout} className='w-full rounded-xl bg-red-50 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100'>
+											退出登录
+										</button>
+									</div>
+								</>
 							) : (
-								<div className='space-y-4'>
-									<p className='text-sm text-gray-500'>使用 GitHub 账号登录</p>
-									<button 
-										onClick={loginWithGitHub} 
-										className='flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-3 text-sm font-medium text-white hover:bg-gray-800'>
-										<svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'>
-											<path d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/>
-										</svg>
-										使用 GitHub 登录
-									</button>
-								</div>
+								<>
+									<h3 className='mb-4 text-lg font-semibold'>管理员登录</h3>
+									<div className='space-y-4'>
+										<p className='text-sm text-gray-500'>使用 GitHub 账号登录</p>
+										<button 
+											onClick={loginWithGitHub} 
+											className='flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-3 text-sm font-medium text-white hover:bg-gray-800'>
+											<svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'>
+												<path d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/>
+											</svg>
+											使用 GitHub 登录
+										</button>
+									</div>
+								</>
 							)}
 						</motion.div>
 					</motion.div>
@@ -256,8 +312,9 @@ export default function NavCard() {
 						maxSM && '!fixed z-50 !bg-white/60 !backdrop-blur-xl !border-white/40 !shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.5)]'
 					)}>
 					<div className='flex items-center gap-3'>
-						<button onClick={handleAvatarClick} className={cn('relative', pathname === '/' && 'after:absolute after:inset-[-4px] after:rounded-full after:bg-gradient-to-br after:from-amber-200/60 after:to-orange-300/40 after:blur-md after:-z-10', isAdmin && 'ring-2 ring-green-400 ring-offset-2 rounded-full')}>
+						<button onClick={handleAvatarClick} className={cn('relative', pathname === '/' && 'after:absolute after:inset-[-4px] after:rounded-full after:bg-gradient-to-br after:from-amber-200/60 after:to-orange-300/40 after:blur-md after:-z-10')}>
 							<Image src='/images/avatar.png' alt='avatar' width={40} height={40} style={{ boxShadow: ' 0 12px 20px -5px #E2D9CE' }} className='rounded-full' />
+							{isAdmin && <span className='absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500' />}
 						</button>
 						{form === 'full' && <Link href='/'><span className='font-averia mt-1 text-2xl leading-none font-medium'>{siteContent.meta.title}</span></Link>}
 						{form === 'full' && <span className='text-brand mt-2 text-xs font-medium'>(开发中)</span>}

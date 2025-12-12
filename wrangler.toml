@@ -13,3 +13,8 @@ binding = "STATIC_ASSETS"
 binding = "DB"
 database_name = "blog-db"
 database_id = "69297e0b-6da4-4cb8-b349-80891d0fbb4a"
+
+# R2 存储桶绑定
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "0n0"

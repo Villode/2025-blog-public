@@ -3,13 +3,18 @@ import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || ''
-
 export async function GET() {
-	const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/callback`
-	
+	// 在函数内部读取环境变量，确保在 Cloudflare 环境中正确获取
+	const clientId = process.env.GITHUB_CLIENT_ID || ''
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://0n0.uk'
+	const redirectUri = `${siteUrl}/api/auth/callback`
+
+	if (!clientId) {
+		return NextResponse.json({ error: '缺少 GITHUB_CLIENT_ID 配置' }, { status: 500 })
+	}
+
 	const params = new URLSearchParams({
-		client_id: GITHUB_CLIENT_ID,
+		client_id: clientId,
 		redirect_uri: redirectUri,
 		scope: 'read:user user:email',
 	})

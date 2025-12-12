@@ -1,5 +1,11 @@
 import { NextConfig } from 'next'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+
+// 初始化 Cloudflare 开发环境
+if (process.env.NODE_ENV === 'development') {
+	initOpenNextCloudflareForDev()
+}
 
 const nextConfig: NextConfig = {
 	devIndicators: false,

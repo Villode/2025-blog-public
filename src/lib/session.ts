@@ -13,6 +13,26 @@ interface SessionData {
 	exp?: number
 }
 
+// Edge-safe base64 编码（支持 Unicode）
+function base64Encode(str: string): string {
+	const bytes = new TextEncoder().encode(str)
+	let binary = ''
+	for (let i = 0; i < bytes.length; i++) {
+		binary += String.fromCharCode(bytes[i])
+	}
+	return btoa(binary)
+}
+
+// Edge-safe base64 解码（支持 Unicode）
+function base64Decode(b64: string): string {
+	const binary = atob(b64)
+	const bytes = new Uint8Array(binary.length)
+	for (let i = 0; i < binary.length; i++) {
+		bytes[i] = binary.charCodeAt(i)
+	}
+	return new TextDecoder().decode(bytes)
+}
+
 // 签名 session
 export async function signSession(data: SessionData): Promise<string> {
 	const payload = {
@@ -21,7 +41,7 @@ export async function signSession(data: SessionData): Promise<string> {
 	}
 
 	const payloadStr = JSON.stringify(payload)
-	const payloadB64 = btoa(payloadStr)
+	const payloadB64 = base64Encode(payloadStr)
 
 	const encoder = new TextEncoder()
 	const key = await crypto.subtle.importKey(
@@ -58,7 +78,7 @@ export async function verifySession(session: string): Promise<SessionData | null
 
 		if (!valid) return null
 
-		const payload = JSON.parse(atob(payloadB64)) as SessionData
+		const payload = JSON.parse(base64Decode(payloadB64)) as SessionData
 
 		// 检查过期
 		if (payload.exp && payload.exp < Date.now()) {

@@ -2,7 +2,7 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// node_modules/.pnpm/@opennextjs+cloudflare@1.14_a0dd11768031eb0ce58ff9f004da2c46/node_modules/@opennextjs/cloudflare/dist/api/cloudflare-context.js
+// node_modules/.pnpm/@opennextjs+cloudflare@1.14_1f1f939e1fe55ca7cb57f51c71773e2b/node_modules/@opennextjs/cloudflare/dist/api/cloudflare-context.js
 var cloudflareContextSymbol = Symbol.for("__cloudflare-context__");
 function getCloudflareContext(options = { async: false }) {
   return options.async ? getCloudflareContextAsync() : getCloudflareContextSync();
@@ -86,7 +86,7 @@ You should update your Next.js config file as shown below:
 
 `;
 
-// node_modules/.pnpm/@opennextjs+cloudflare@1.14_a0dd11768031eb0ce58ff9f004da2c46/node_modules/@opennextjs/cloudflare/dist/api/overrides/asset-resolver/index.js
+// node_modules/.pnpm/@opennextjs+cloudflare@1.14_1f1f939e1fe55ca7cb57f51c71773e2b/node_modules/@opennextjs/cloudflare/dist/api/overrides/asset-resolver/index.js
 var resolver = {
   name: "cloudflare-asset-resolver",
   async maybeGetAssetResult(event) {
@@ -144,7 +144,7 @@ function isUserWorkerFirst(runWorkerFirst, pathname) {
 }
 var asset_resolver_default = resolver;
 
-// node_modules/.pnpm/@opennextjs+cloudflare@1.14_a0dd11768031eb0ce58ff9f004da2c46/node_modules/@opennextjs/cloudflare/dist/api/config.js
+// node_modules/.pnpm/@opennextjs+cloudflare@1.14_1f1f939e1fe55ca7cb57f51c71773e2b/node_modules/@opennextjs/cloudflare/dist/api/config.js
 function defineCloudflareConfig(config = {}) {
   const { incrementalCache, tagCache, queue, cachePurge, enableCacheInterception = false, routePreloadingBehavior = "none" } = config;
   return {
@@ -275,7 +275,7 @@ function getOpenNextErrorLogLevel() {
   }
 }
 
-// node_modules/.pnpm/@opennextjs+cloudflare@1.14_a0dd11768031eb0ce58ff9f004da2c46/node_modules/@opennextjs/cloudflare/dist/api/overrides/internal.js
+// node_modules/.pnpm/@opennextjs+cloudflare@1.14_1f1f939e1fe55ca7cb57f51c71773e2b/node_modules/@opennextjs/cloudflare/dist/api/overrides/internal.js
 import { createHash } from "node:crypto";
 var debugCache = (name, ...args) => {
   if (process.env.NEXT_PRIVATE_DEBUG_CACHE) {
@@ -290,7 +290,7 @@ function computeCacheKey(key, options) {
   return `${prefix}/${buildId}/${hash}.${cacheType}`.replace(/\/+/g, "/");
 }
 
-// node_modules/.pnpm/@opennextjs+cloudflare@1.14_a0dd11768031eb0ce58ff9f004da2c46/node_modules/@opennextjs/cloudflare/dist/api/overrides/incremental-cache/r2-incremental-cache.js
+// node_modules/.pnpm/@opennextjs+cloudflare@1.14_1f1f939e1fe55ca7cb57f51c71773e2b/node_modules/@opennextjs/cloudflare/dist/api/overrides/incremental-cache/r2-incremental-cache.js
 var NAME = "cf-r2-incremental-cache";
 var BINDING_NAME = "NEXT_INC_CACHE_R2_BUCKET";
 var PREFIX_ENV_NAME = "NEXT_INC_CACHE_R2_PREFIX";

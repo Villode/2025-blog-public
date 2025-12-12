@@ -35,10 +35,15 @@ export async function GET(request: Request) {
 			}),
 		})
 
+		if (!tokenRes.ok) {
+			console.error('Token request failed:', tokenRes.status, tokenRes.statusText)
+			return Response.redirect(`${siteUrl}?error=token_request_failed`, 302)
+		}
+
 		const tokenData = await tokenRes.json()
 		if (!tokenData.access_token) {
-			console.error('Token exchange failed:', tokenData)
-			return Response.redirect(`${siteUrl}?error=token_failed`, 302)
+			console.error('Token exchange failed:', JSON.stringify(tokenData))
+			return Response.redirect(`${siteUrl}?error=token_failed&detail=${encodeURIComponent(tokenData.error || 'unknown')}`, 302)
 		}
 
 		// 获取用户信息
@@ -46,11 +51,22 @@ export async function GET(request: Request) {
 			headers: {
 				Authorization: `Bearer ${tokenData.access_token}`,
 				Accept: 'application/vnd.github+json',
+				'User-Agent': '0n0-blog',
 			},
 		})
 
+		if (!userRes.ok) {
+			console.error('User request failed:', userRes.status, userRes.statusText)
+			return Response.redirect(`${siteUrl}?error=user_request_failed`, 302)
+		}
+
 		const userData = await userRes.json()
 		const username = userData.login
+
+		if (!username) {
+			console.error('No username in response:', JSON.stringify(userData))
+			return Response.redirect(`${siteUrl}?error=no_username`, 302)
+		}
 
 		// 检查是否是允许的用户
 		if (allowedUser && username !== allowedUser) {
@@ -68,7 +84,7 @@ export async function GET(request: Request) {
 
 		return new Response(null, { status: 302, headers })
 	} catch (error) {
-		console.error('OAuth error:', error)
-		return Response.redirect(`${siteUrl}?error=oauth_failed`, 302)
+		console.error('OAuth error:', error instanceof Error ? error.message : String(error))
+		return Response.redirect(`${siteUrl}?error=oauth_failed&msg=${encodeURIComponent(error instanceof Error ? error.message : 'unknown')}`, 302)
 	}
 }

@@ -1,5 +1,11 @@
 // 文章相关的数据库和 R2 操作
-import { getCloudflareContext } from '@opennextjs/cloudflare'
+import type { D1Database, R2Bucket } from '@cloudflare/workers-types'
+
+// 动态导入 getCloudflareContext 避免构建时问题
+async function getCloudflareContext() {
+	const mod = await import('@opennextjs/cloudflare')
+	return mod.getCloudflareContext()
+}
 
 export interface Article {
 	id: number
@@ -52,12 +58,13 @@ function rowToArticle(row: ArticleRow): Article {
 }
 
 // 获取 D1 和 R2
-async function getBindings() {
+async function getBindings(): Promise<{ db: D1Database | null; bucket: R2Bucket | null }> {
 	try {
-		const { env } = await getCloudflareContext()
+		const ctx = await getCloudflareContext()
+		const env = ctx.env as { DB?: D1Database; BUCKET?: R2Bucket }
 		return {
-			db: (env as any).DB,
-			bucket: (env as any).BUCKET,
+			db: env.DB || null,
+			bucket: env.BUCKET || null,
 		}
 	} catch (error) {
 		console.error('Failed to get Cloudflare context:', error)

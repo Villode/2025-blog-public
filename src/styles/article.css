@@ -116,6 +116,7 @@
 	font-family: var(--font-mono);
 }
 .prose pre {
+	background: rgba(250, 250, 250, 0.6) !important;
 	border: 1px solid rgba(0, 0, 0, 0.06);
 	padding: 1rem 1.25rem;
 	border-radius: 12px;

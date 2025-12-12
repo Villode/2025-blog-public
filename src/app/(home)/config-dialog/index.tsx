@@ -198,14 +198,14 @@ export default function ConfigDialog({ open, onClose }: ConfigDialogProps) {
 				}}
 			/>
 
-			<DialogModal open={open} onClose={handleCancel} className='card scrollbar-none max-h-[90vh] min-h-[600px] w-[640px] overflow-y-auto'>
-				<div className='mb-6 flex items-center justify-between'>
-					<div className='flex gap-1'>
+			<DialogModal open={open} onClose={handleCancel} className='card scrollbar-none max-h-[90vh] min-h-[600px] w-[640px] overflow-y-auto max-sm:!fixed max-sm:!inset-0 max-sm:!w-full max-sm:!h-full max-sm:!max-h-full max-sm:!min-h-0 max-sm:!bg-transparent max-sm:!border-0 max-sm:!shadow-none max-sm:!rounded-none max-sm:p-4'>
+				<div className='mb-6 flex flex-col gap-4 max-sm:gap-3'>
+					<div className='flex gap-1 overflow-x-auto'>
 						{tabs.map(tab => (
 							<button
 								key={tab.id}
 								onClick={() => setActiveTab(tab.id)}
-								className={`relative px-4 py-2 text-sm font-medium transition-colors ${
+								className={`relative shrink-0 px-4 py-2 text-sm font-medium transition-colors max-sm:px-3 max-sm:text-xs ${
 									activeTab === tab.id ? 'text-brand' : 'text-secondary hover:text-primary'
 								}`}>
 								{tab.label}
@@ -213,12 +213,12 @@ export default function ConfigDialog({ open, onClose }: ConfigDialogProps) {
 							</button>
 						))}
 					</div>
-					<div className='flex gap-3'>
+					<div className='flex gap-3 max-sm:gap-2'>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handlePreview}
-							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'>
+							className='rounded-xl border bg-white/60 px-6 py-2 text-sm max-sm:flex-1 max-sm:px-3 max-sm:text-xs'>
 							预览
 						</motion.button>
 						<motion.button
@@ -226,10 +226,10 @@ export default function ConfigDialog({ open, onClose }: ConfigDialogProps) {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleCancel}
 							disabled={isSaving}
-							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'>
+							className='rounded-xl border bg-white/60 px-6 py-2 text-sm max-sm:flex-1 max-sm:px-3 max-sm:text-xs'>
 							取消
 						</motion.button>
-						<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveClick} disabled={isSaving} className='brand-btn px-6'>
+						<motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSaveClick} disabled={isSaving} className='brand-btn px-6 max-sm:flex-1 max-sm:px-3 max-sm:text-xs'>
 							{isSaving ? '保存中...' : buttonText}
 						</motion.button>
 					</div>

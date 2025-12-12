@@ -79,11 +79,11 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 	}
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative'>
-			<h2 className='text-sm'>封面</h2>
+		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative max-sm:!bg-transparent max-sm:!border-0 max-sm:!p-0 max-sm:!shadow-none'>
+			<h2 className='text-sm max-sm:mb-2 max-sm:text-base max-sm:font-medium'>封面</h2>
 			<input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleFileChange} />
 			<div
-				className='mt-3 h-[150px] overflow-hidden rounded-xl border bg-white/60'
+				className='mt-3 h-[150px] overflow-hidden rounded-xl border bg-white/60 max-sm:rounded-2xl max-sm:border-0 max-sm:bg-white'
 				onDragOver={e => {
 					e.preventDefault()
 				}}
@@ -91,7 +91,7 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 				{!!coverPreviewUrl ? (
 					<img src={coverPreviewUrl} alt='cover preview' className='h-full w-full rounded-2xl object-cover' />
 				) : (
-					<div className='grid h-full w-full cursor-pointer place-items-center transition-colors hover:bg-white/60' onClick={handleClickUpload}>
+					<div className='grid h-full w-full cursor-pointer place-items-center transition-colors hover:bg-white/60 max-sm:hover:bg-white/80' onClick={handleClickUpload}>
 						<span className='text-3xl leading-none text-neutral-400'>+</span>
 					</div>
 				)}

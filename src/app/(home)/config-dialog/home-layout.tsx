@@ -31,6 +31,10 @@ export function HomeLayout({ cardStylesData, setCardStylesData, onClose }: HomeL
 	const editing = useLayoutEditStore(state => state.editing)
 
 	const handleStartManualLayout = () => {
+		// 检查是否为移动端
+		if (typeof window !== 'undefined' && window.innerWidth < 640) {
+			return
+		}
 		setCardStyles(cardStylesData)
 		startEditing()
 		onClose?.()
@@ -42,22 +46,22 @@ export function HomeLayout({ cardStylesData, setCardStylesData, onClose }: HomeL
 
 	return (
 		<div className='overflow-x-auto'>
-			<div className='flex items-center justify-between'>
-				<div className='text-secondary text-sm'>（偏移代表相对中心的偏移）</div>
-				<div className='flex shrink-0 items-center gap-2 whitespace-nowrap'>
-					<button type='button' onClick={handleReset} className='bg-card rounded-xl border px-3 py-1.5 text-xs font-medium'>
+			<div className='flex flex-col gap-3 max-sm:gap-2'>
+				<div className='text-secondary text-sm max-sm:text-xs'>（偏移代表相对中心的偏移）</div>
+				<div className='flex shrink-0 items-center gap-2 whitespace-nowrap max-sm:flex-col max-sm:w-full'>
+					<button type='button' onClick={handleReset} className='bg-card rounded-xl border px-3 py-1.5 text-xs font-medium max-sm:w-full'>
 						重置
 					</button>
 					<button
 						type='button'
 						onClick={handleStartManualLayout}
 						disabled={editing}
-						className='bg-card rounded-xl border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50'>
+						className='bg-card rounded-xl border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 max-sm:w-full max-sm:hidden'>
 						{editing ? '主页正在编辑中' : '进入主页拖拽布局'}
 					</button>
 				</div>
 			</div>
-			<table className='mt-3 w-full border-collapse text-sm'>
+			<table className='mt-3 w-full border-collapse text-sm max-sm:text-xs'>
 				<thead>
 					<tr className='border-b text-xs text-gray-500'>
 						<th className='px-3 py-2 text-left font-medium'>卡片</th>

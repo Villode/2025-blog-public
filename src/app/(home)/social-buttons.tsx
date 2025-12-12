@@ -39,7 +39,7 @@ export default function SocialButtons() {
 
 	return (
 		<HomeDraggableLayer cardKey='socialButtons' x={x} y={y} width={styles.width} height={styles.height}>
-			<motion.div className='absolute max-sm:static' animate={{ left: x, top: y }} initial={{ left: x, top: y }}>
+			<motion.div className='absolute max-sm:hidden' animate={{ left: x, top: y }} initial={{ left: x, top: y }}>
 				<div className='absolute top-0 left-0 flex items-center justify-end gap-3 max-sm:static' style={{ width: styles.width }}>
 					{tertiaryShow && (
 						<motion.a

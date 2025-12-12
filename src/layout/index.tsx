@@ -8,12 +8,17 @@ import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon
 import { useSize, useSizeInit } from '@/hooks/use-size'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { ScrollTopButton } from '@/components/scroll-top-button'
+import { usePathname } from 'next/navigation'
 
 export default function Layout({ children }: PropsWithChildren) {
 	useCenterInit()
 	useSizeInit()
 	const { siteContent, regenerateKey } = useConfigStore()
 	const { maxSM, init } = useSize()
+	const pathname = usePathname()
+	
+	// 在 /write 页面不显示回到顶部按钮
+	const showScrollTopButton = maxSM && init && !pathname.startsWith('/write')
 
 	return (
 		<>
@@ -39,7 +44,7 @@ export default function Layout({ children }: PropsWithChildren) {
 				<NavCard />
 			</main>
 
-			{maxSM && init && <ScrollTopButton className='bg-brand/20 fixed right-6 bottom-8 z-50 shadow-md' />}
+			{showScrollTopButton && <ScrollTopButton className='bg-brand/20 fixed right-6 bottom-8 z-50 shadow-md' />}
 		</>
 	)
 }

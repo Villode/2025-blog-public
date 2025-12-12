@@ -6,6 +6,7 @@ import { ANIMATION_DELAY, INIT_DELAY } from '@/consts'
 import LikeButton from '@/components/like-button'
 import { BlogToc } from '@/components/blog-toc'
 import { ScrollTopButton } from '@/components/scroll-top-button'
+import { AiSummary } from '@/components/ai-summary'
 
 type TocItem = {
 	id: string
@@ -18,10 +19,12 @@ type BlogSidebarProps = {
 	summary?: string
 	toc: TocItem[]
 	slug?: string
+	markdown?: string
+	title?: string
 }
 const offset = 72
 
-export function BlogSidebar({ cover, summary, toc, slug }: BlogSidebarProps) {
+export function BlogSidebar({ cover, summary, toc, slug, markdown, title }: BlogSidebarProps) {
 	const [maxOffset, setMaxOffset] = useState(0)
 	const { scrollY } = useScroll()
 
@@ -74,16 +77,7 @@ export function BlogSidebar({ cover, summary, toc, slug }: BlogSidebarProps) {
 				</motion.div>
 			)}
 
-			{summary && (
-				<motion.div
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ delay: INIT_DELAY + ANIMATION_DELAY * 2 }}
-					className='bg-card w-full rounded-xl border p-3 text-sm'>
-					<h2 className='text-secondary mb-2 font-medium'>摘要</h2>
-					<div className='text-secondary cursor-text'>{summary}</div>
-				</motion.div>
-			)}
+			{markdown && title && <AiSummary markdown={markdown} title={title} slug={slug} delay={INIT_DELAY + ANIMATION_DELAY * 2} />}
 
 			<BlogToc toc={toc} delay={INIT_DELAY + ANIMATION_DELAY * 3} />
 

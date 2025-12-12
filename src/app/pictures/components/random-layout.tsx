@@ -156,7 +156,9 @@ const FloatingImage = ({
 		const maxRatio = 3 / 2
 		const clampedRatio = Math.min(Math.max(ratio, minRatio), maxRatio)
 
-		const baseWidth = 200
+		// 移动端使用更小的尺寸
+		const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+		const baseWidth = isMobile ? 140 : 200
 
 		return {
 			width: baseWidth,
@@ -296,10 +298,21 @@ const FloatingImage = ({
 						}
 						mouseDownTimeRef.current = null
 					}}
+					onTouchStart={() => {
+						lastZIndex = lastZIndex + 1
+						setZIndex(lastZIndex)
+					}}
+					onClick={e => {
+						// 移动端直接点击放大
+						if (typeof window !== 'undefined' && window.innerWidth < 640) {
+							e.stopPropagation()
+							setIsZoomed(true)
+						}
+					}}
 					draggable={false}
 					className={cn(
 						'group cursor-pointer rounded border-8 object-cover shadow-xl transition-[scale] select-none',
-						!isEditMode && !isZoomed && 'hover:scale-110'
+						!isEditMode && !isZoomed && 'hover:scale-110 active:scale-95'
 					)}
 				/>
 				{isEditMode && !isZoomed && (
@@ -310,7 +323,7 @@ const FloatingImage = ({
 							e.stopPropagation()
 							onDeleteSingle?.(pictureId, imageIndex)
 						}}
-						className='absolute -top-2 -right-2 rounded-full bg-red-500 p-1.5 opacity-0 shadow-lg transition-all group-hover:opacity-100 hover:scale-105 hover:bg-red-600'
+						className='absolute -top-2 -right-2 rounded-full bg-red-500 p-1.5 shadow-lg transition-all hover:scale-105 hover:bg-red-600 sm:opacity-0 sm:group-hover:opacity-100'
 						style={{ zIndex: 1 }}>
 						<svg xmlns='http://www.w3.org/2000/svg' className='h-3 w-3 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
 							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
@@ -324,12 +337,12 @@ const FloatingImage = ({
 					drag
 					dragConstraints={bodyRef}
 					dragMomentum={false}
-					className='fixed min-h-[150px] w-[200px] cursor-pointer p-6 shadow'
+					className='fixed min-h-[150px] w-[200px] cursor-pointer p-6 shadow max-sm:bottom-4 max-sm:left-4 max-sm:right-4 max-sm:w-auto'
 					style={{
 						backgroundColor: siteContent.backgroundColors[groupIndex % siteContent.backgroundColors.length],
 						zIndex: TOP_Z_INDEX + 1,
-						right: centerX / 3,
-						top: centerY
+						right: typeof window !== 'undefined' && window.innerWidth >= 640 ? centerX / 3 : undefined,
+						top: typeof window !== 'undefined' && window.innerWidth >= 640 ? centerY : undefined
 					}}
 					initial={{ opacity: 0, scale: 0.4 }}
 					animate={{ opacity: 1, scale: 1 }}>
@@ -359,7 +372,10 @@ const getStablePosition = (uniqueId: string, width: number, height: number): Pos
 	}
 	const stableIndex = Math.abs(hash) % 10000
 
-	const maxRadius = Math.min(width, height) / 2 - 100
+	// 移动端使用更小的半径和更紧凑的布局
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+	const padding = isMobile ? 80 : 100
+	const maxRadius = Math.min(width, height) / 2 - padding
 	const goldenAngle = Math.PI * (3 - Math.sqrt(5))
 
 	// 使用稳定索引来计算位置，而不是数组索引
@@ -372,11 +388,13 @@ const getStablePosition = (uniqueId: string, width: number, height: number): Pos
 
 	// 使用 uniqueId 生成稳定的 jitter，确保每次都是相同的位置
 	const jitterSeed = Math.abs(hash) % 1000
-	const jitterRadius = 12
+	const jitterRadius = isMobile ? 8 : 12
 	const jitterX = (jitterSeed % (jitterRadius * 2)) - jitterRadius
 	const jitterY = ((jitterSeed * 7) % (jitterRadius * 2)) - jitterRadius
 
-	const rotation = ((jitterSeed * 13) % 60) - 30
+	// 移动端减小旋转角度
+	const rotationRange = isMobile ? 40 : 60
+	const rotation = ((jitterSeed * 13) % rotationRange) - rotationRange / 2
 
 	const position = {
 		x: baseX + jitterX,

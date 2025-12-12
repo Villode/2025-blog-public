@@ -6,7 +6,7 @@ import ClockCard from '@/app/(home)/clock-card'
 import CalendarCard from '@/app/(home)/calendar-card'
 import MusicCard from '@/app/(home)/music-card'
 import SocialButtons from '@/app/(home)/social-buttons'
-import ShareCard from '@/app/(home)/share-card'
+
 import AritcleCard from '@/app/(home)/aritcle-card'
 import WriteButtons from '@/app/(home)/write-buttons'
 import LikePosition from './like-position'
@@ -55,15 +55,15 @@ export default function Home() {
 			)}
 
 			<div className='max-sm:flex max-sm:flex-col max-sm:items-center max-sm:gap-6 max-sm:pt-28 max-sm:pb-20'>
-				<ArtCard />
+				{!maxSM && <ArtCard />}
 				<HiCard />
+				<AritcleCard />
 				{!maxSM && <ClockCard />}
 				{!maxSM && <CalendarCard />}
 				{!maxSM && <MusicCard />}
 				<SocialButtons />
-				{!maxSM && <ShareCard />}
-				<AritcleCard />
-				{!maxSM && <WriteButtons />}
+				
+				<WriteButtons />
 				<LikePosition />
 			</div>
 		</>

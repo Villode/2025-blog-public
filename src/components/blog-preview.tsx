@@ -5,6 +5,7 @@ import { INIT_DELAY } from '@/consts'
 import { useMarkdownRender } from '@/hooks/use-markdown-render'
 import { useSize } from '@/hooks/use-size'
 import { BlogSidebar } from '@/components/blog-sidebar'
+import { AiSummary } from '@/components/ai-summary'
 
 type BlogPreviewProps = {
 	markdown: string
@@ -30,7 +31,7 @@ export function BlogPreview({ markdown, title, tags, date, summary, cover, slug 
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ delay: INIT_DELAY }}
-				className='card bg-article static flex-1 overflow-auto rounded-xl p-8'>
+				className='static flex-1 overflow-auto p-8 max-sm:px-6'>
 				<div>
 					<div className='text-center text-2xl font-semibold'>{title}</div>
 
@@ -41,11 +42,19 @@ export function BlogPreview({ markdown, title, tags, date, summary, cover, slug 
 					</div>
 
 					<div className='text-secondary mt-3 text-center text-sm'>{date}</div>
+
+					{/* 移动端AI总结 */}
+					{isMobile && (
+						<div className='mt-6'>
+							<AiSummary markdown={markdown} title={title} slug={slug} delay={INIT_DELAY} />
+						</div>
+					)}
+
 					<div className='prose mt-6 max-w-none cursor-text'>{content}</div>
 				</div>
 			</motion.article>
 
-			{!isMobile && <BlogSidebar cover={cover} summary={summary} toc={toc} slug={slug} />}
+			{!isMobile && <BlogSidebar cover={cover} summary={summary} toc={toc} slug={slug} markdown={markdown} title={title} />}
 		</div>
 	)
 }

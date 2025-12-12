@@ -17,10 +17,10 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 	const coverId = cover?.id ?? null
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative'>
-			<div className='flex items-center justify-between'>
-				<h2 className='text-sm'>图片管理</h2>
-				<Link href='/image-toolbox' target='_blank' className='text-xs hover:underline'>
+		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card relative max-sm:!bg-transparent max-sm:!border-0 max-sm:!p-0 max-sm:!shadow-none'>
+			<div className='flex items-center justify-between max-sm:mb-2'>
+				<h2 className='text-sm max-sm:text-base max-sm:font-medium'>图片管理</h2>
+				<Link href='/image-toolbox' target='_blank' className='text-xs hover:underline max-sm:text-sm'>
 					压缩工具
 				</Link>
 			</div>
@@ -29,12 +29,12 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 				<input
 					type='text'
 					placeholder='https://...'
-					className='flex-1 rounded-lg border bg-white/70 px-3 py-2 text-sm'
+					className='flex-1 rounded-lg border bg-white/70 px-3 py-2 text-sm max-sm:rounded-xl max-sm:border-0 max-sm:bg-white max-sm:px-4 max-sm:py-3 max-sm:text-base'
 					value={urlInput}
 					onChange={e => setUrlInput(e.target.value)}
 				/>
 				<button
-					className='rounded-lg border bg-white/70 px-3 py-2 text-sm'
+					className='rounded-lg border bg-white/70 px-3 py-2 text-sm max-sm:rounded-xl max-sm:border-0 max-sm:bg-white max-sm:px-4 max-sm:py-3 max-sm:text-base max-sm:font-medium'
 					onClick={() => {
 						const v = urlInput.trim()
 						if (!v) return
@@ -63,7 +63,7 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 			<div className='mt-3 grid grid-cols-4 gap-2'>
 				{/* plus tile */}
 				<div
-					className='group relative grid aspect-square cursor-pointer place-items-center rounded-lg border bg-white/50 hover:bg-white/70'
+					className='group relative grid aspect-square cursor-pointer place-items-center rounded-lg border bg-white/50 hover:bg-white/70 max-sm:rounded-xl max-sm:border-0 max-sm:bg-white'
 					onClick={() => fileInputRef.current?.click()}
 					onDragOver={e => {
 						e.preventDefault()
@@ -85,7 +85,7 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 					return (
 						<div
 							key={item.id}
-							className={`group relative aspect-square overflow-hidden rounded-lg border bg-white/50 text-xs ${isCover ? 'ring-2 ring-blue-500' : ''}`}>
+							className={`group relative aspect-square overflow-hidden rounded-lg border bg-white/50 text-xs max-sm:rounded-xl max-sm:border-0 max-sm:bg-white ${isCover ? 'ring-2 ring-blue-500' : ''}`}>
 							<img
 								src={src}
 								className='h-full w-full object-cover'

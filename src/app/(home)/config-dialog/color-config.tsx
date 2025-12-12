@@ -137,72 +137,72 @@ export function ColorConfig({ formData, setFormData }: ColorConfigProps) {
 	}
 
 	return (
-		<div className='space-y-6'>
+		<div className='space-y-6 max-sm:space-y-4'>
 			<div>
-				<label className='mb-2 block text-sm font-medium'>基础颜色</label>
-				<div className='grid grid-cols-2 gap-4'>
-					<div className='flex items-center gap-3'>
+				<label className='mb-2 block text-sm font-medium max-sm:text-xs'>基础颜色</label>
+				<div className='grid grid-cols-2 gap-4 max-sm:gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={formData.theme?.colorBrand ?? '#35bfab'} onChange={handleBrandColorChange} />
-						<span className='text-xs'>主题色</span>
+						<span className='text-xs max-sm:text-[10px]'>主题色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker
 							value={theme.colorBrandSecondary ?? DEFAULT_THEME_COLORS.colorBrandSecondary}
 							onChange={value => handleThemeColorChange('colorBrandSecondary', value)}
 						/>
-						<span className='text-xs'>次级主题色</span>
+						<span className='text-xs max-sm:text-[10px]'>次级主题色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={theme.colorPrimary ?? DEFAULT_THEME_COLORS.colorPrimary} onChange={value => handleThemeColorChange('colorPrimary', value)} />
-						<span className='text-xs'>主色</span>
+						<span className='text-xs max-sm:text-[10px]'>主色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker
 							value={theme.colorSecondary ?? DEFAULT_THEME_COLORS.colorSecondary}
 							onChange={value => handleThemeColorChange('colorSecondary', value)}
 						/>
-						<span className='text-xs'>次色</span>
+						<span className='text-xs max-sm:text-[10px]'>次色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={theme.colorBg ?? DEFAULT_THEME_COLORS.colorBg} onChange={value => handleThemeColorChange('colorBg', value)} />
-						<span className='text-xs'>背景色</span>
+						<span className='text-xs max-sm:text-[10px]'>背景色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={theme.colorBorder ?? DEFAULT_THEME_COLORS.colorBorder} onChange={value => handleThemeColorChange('colorBorder', value)} />
-						<span className='text-xs'>边框色</span>
+						<span className='text-xs max-sm:text-[10px]'>边框色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={theme.colorCard ?? DEFAULT_THEME_COLORS.colorCard} onChange={value => handleThemeColorChange('colorCard', value)} />
-						<span className='text-xs'>卡片色</span>
+						<span className='text-xs max-sm:text-[10px]'>卡片色</span>
 					</div>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 max-sm:gap-2'>
 						<ColorPicker value={theme.colorArticle ?? DEFAULT_THEME_COLORS.colorArticle} onChange={value => handleThemeColorChange('colorArticle', value)} />
-						<span className='text-xs'>文章背景</span>
+						<span className='text-xs max-sm:text-[10px]'>文章背景</span>
 					</div>
 				</div>
 			</div>
 
 			<div>
-				<div className='mb-2 flex items-center justify-between gap-3'>
-					<label className='block text-sm font-medium'>背景颜色</label>
-					<div className='flex gap-2'>
+				<div className='mb-2 flex flex-col gap-2 max-sm:gap-1.5'>
+					<label className='block text-sm font-medium max-sm:text-xs'>背景颜色</label>
+					<div className='flex gap-2 max-sm:gap-1.5'>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handleRandomizeColors}
-							className='rounded-lg border bg-white/60 px-3 py-1 text-xs whitespace-nowrap'>
+							className='rounded-lg border bg-white/60 px-3 py-1 text-xs whitespace-nowrap max-sm:flex-1 max-sm:px-2 max-sm:text-[10px]'>
 							随机配色
 						</motion.button>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handleAddColor}
-							className='rounded-lg border bg-white/60 px-3 py-1 text-xs whitespace-nowrap'>
+							className='rounded-lg border bg-white/60 px-3 py-1 text-xs whitespace-nowrap max-sm:flex-1 max-sm:px-2 max-sm:text-[10px]'>
 							+ 添加颜色
 						</motion.button>
 					</div>
 				</div>
-				<div className='flex gap-3'>
+				<div className='flex flex-wrap gap-3 max-sm:gap-2'>
 					{formData.backgroundColors.map((color, index) => (
 						<div key={index} className='flex items-center gap-2'>
 							<div className='group relative'>
@@ -220,23 +220,23 @@ export function ColorConfig({ formData, setFormData }: ColorConfigProps) {
 				</div>
 			</div>
 
-			<div className='flex flex-col gap-3'>
+			<div className='flex flex-col gap-3 max-sm:gap-2'>
 				{COLOR_PRESETS.map(preset => (
 					<button
 						key={preset.name}
 						onClick={() => handlePresetChange(preset)}
-						className='flex items-center gap-3 rounded-lg border bg-white/60 p-3 transition-colors hover:bg-white/80'>
-						<div className='flex items-center gap-2'>
+						className='flex items-center gap-3 rounded-lg border bg-white/60 p-3 transition-colors hover:bg-white/80 max-sm:flex-col max-sm:items-start max-sm:gap-2 max-sm:p-2'>
+						<div className='flex items-center gap-2 max-sm:gap-1.5 max-sm:overflow-x-auto max-sm:w-full'>
 							<div
-								className='h-10 w-10 rounded-lg border-2 border-white/20 shadow-sm'
+								className='h-10 w-10 shrink-0 rounded-lg border-2 border-white/20 shadow-sm max-sm:h-8 max-sm:w-8'
 								style={{ backgroundColor: preset.theme.colorBrand ?? DEFAULT_THEME_COLORS.colorBrand }}
 							/>
 							{preset.backgroundColors.map((color, index) => (
-								<div key={index} className='h-10 w-10 rounded-lg border-2 border-white/20 shadow-sm' style={{ backgroundColor: color }} />
+								<div key={index} className='h-10 w-10 shrink-0 rounded-lg border-2 border-white/20 shadow-sm max-sm:h-8 max-sm:w-8' style={{ backgroundColor: color }} />
 							))}
 						</div>
 
-						<span className='text-sm font-medium whitespace-nowrap'>{preset.name}</span>
+						<span className='text-sm font-medium whitespace-nowrap max-sm:text-xs'>{preset.name}</span>
 					</button>
 				))}
 			</div>

@@ -1,21 +1,22 @@
 // Session 验证 API
-import { NextRequest, NextResponse } from 'next/server'
 import { verifySession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
 	try {
-		const session = request.cookies.get(SESSION_COOKIE)?.value
+		const cookieHeader = request.headers.get('cookie') || ''
+		const sessionMatch = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`))
+		const session = sessionMatch?.[1]
 
 		if (!session) {
-			return NextResponse.json({ valid: false })
+			return Response.json({ valid: false })
 		}
 
 		const data = await verifySession(session)
-		return NextResponse.json({ valid: !!data })
+		return Response.json({ valid: !!data })
 	} catch (error) {
 		console.error('Verify error:', error)
-		return NextResponse.json({ valid: false })
+		return Response.json({ valid: false })
 	}
 }

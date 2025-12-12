@@ -1,28 +1,29 @@
 // 获取当前用户信息
-import { NextRequest, NextResponse } from 'next/server'
 import { verifySession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
 	try {
-		const session = request.cookies.get(SESSION_COOKIE)?.value
+		const cookieHeader = request.headers.get('cookie') || ''
+		const sessionMatch = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`))
+		const session = sessionMatch?.[1]
 
 		if (!session) {
-			return NextResponse.json({ user: null, authenticated: false })
+			return Response.json({ user: null, authenticated: false })
 		}
 
 		const data = await verifySession(session)
 		if (!data) {
-			return NextResponse.json({ user: null, authenticated: false })
+			return Response.json({ user: null, authenticated: false })
 		}
 
-		return NextResponse.json({
+		return Response.json({
 			user: { id: data.username, role: data.role },
-			authenticated: true
+			authenticated: true,
 		})
 	} catch (error) {
 		console.error('Auth error:', error)
-		return NextResponse.json({ user: null, authenticated: false }, { status: 500 })
+		return Response.json({ user: null, authenticated: false }, { status: 500 })
 	}
 }

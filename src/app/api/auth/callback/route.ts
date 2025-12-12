@@ -1,24 +1,23 @@
 // GitHub OAuth 回调
-import { NextRequest, NextResponse } from 'next/server'
 import { signSession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
-export async function GET(request: NextRequest) {
-	// 在函数内部读取环境变量
+export async function GET(request: Request) {
 	const clientId = process.env.GITHUB_CLIENT_ID || ''
 	const clientSecret = process.env.GITHUB_CLIENT_SECRET || ''
 	const allowedUser = process.env.GITHUB_ALLOWED_USER || ''
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://0n0.uk'
 
-	const code = request.nextUrl.searchParams.get('code')
+	const url = new URL(request.url)
+	const code = url.searchParams.get('code')
 
 	if (!code) {
-		return NextResponse.redirect(`${siteUrl}?error=no_code`)
+		return Response.redirect(`${siteUrl}?error=no_code`, 302)
 	}
 
 	if (!clientId || !clientSecret) {
-		return NextResponse.redirect(`${siteUrl}?error=missing_config`)
+		return Response.redirect(`${siteUrl}?error=missing_config`, 302)
 	}
 
 	try {
@@ -39,7 +38,7 @@ export async function GET(request: NextRequest) {
 		const tokenData = await tokenRes.json()
 		if (!tokenData.access_token) {
 			console.error('Token exchange failed:', tokenData)
-			return NextResponse.redirect(`${siteUrl}?error=token_failed`)
+			return Response.redirect(`${siteUrl}?error=token_failed`, 302)
 		}
 
 		// 获取用户信息
@@ -55,23 +54,21 @@ export async function GET(request: NextRequest) {
 
 		// 检查是否是允许的用户
 		if (allowedUser && username !== allowedUser) {
-			return NextResponse.redirect(`${siteUrl}?error=not_allowed`)
+			return Response.redirect(`${siteUrl}?error=not_allowed`, 302)
 		}
 
 		// 生成签名 session
 		const session = await signSession({ username, role: 'admin' })
 
-		const response = NextResponse.redirect(siteUrl)
-		response.cookies.set(SESSION_COOKIE, session, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'lax',
-			maxAge: 7 * 24 * 60 * 60,
-		})
+		const headers = new Headers({ Location: siteUrl })
+		headers.append(
+			'Set-Cookie',
+			`${SESSION_COOKIE}=${session}; HttpOnly; Secure; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}; Path=/`
+		)
 
-		return response
+		return new Response(null, { status: 302, headers })
 	} catch (error) {
 		console.error('OAuth error:', error)
-		return NextResponse.redirect(`${siteUrl}?error=oauth_failed`)
+		return Response.redirect(`${siteUrl}?error=oauth_failed`, 302)
 	}
 }

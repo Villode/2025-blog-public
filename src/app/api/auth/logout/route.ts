@@ -1,11 +1,11 @@
 // 登出
-import { NextResponse } from 'next/server'
 import { SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
 export async function POST() {
-	const response = NextResponse.json({ success: true })
-	response.cookies.delete(SESSION_COOKIE)
-	return response
+	const headers = new Headers({ 'Content-Type': 'application/json' })
+	headers.append('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/`)
+
+	return new Response(JSON.stringify({ success: true }), { headers })
 }

@@ -1,18 +1,29 @@
 // 单篇文章 API
-import { NextRequest, NextResponse } from 'next/server'
-import { getArticleBySlug, getArticleContent, updateArticle, deleteArticle, incrementViews } from '@/lib/articles'
+import {
+	getArticleBySlug,
+	getArticleContent,
+	updateArticle,
+	deleteArticle,
+	incrementViews,
+} from '@/lib/articles'
 import { verifySession, SESSION_COOKIE } from '@/lib/session'
 
 export const runtime = 'edge'
 
+function getSession(request: Request): string | undefined {
+	const cookieHeader = request.headers.get('cookie') || ''
+	const sessionMatch = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`))
+	return sessionMatch?.[1]
+}
+
 // 获取单篇文章
-export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params
 
 	try {
 		const article = await getArticleBySlug(slug)
 		if (!article) {
-			return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+			return Response.json({ error: 'Article not found' }, { status: 404 })
 		}
 
 		// 获取正文
@@ -21,25 +32,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 		// 增加浏览数
 		await incrementViews(slug)
 
-		return NextResponse.json({ article, content })
+		return Response.json({ article, content })
 	} catch (error) {
 		console.error('Get article error:', error)
-		return NextResponse.json({ error: 'Failed to get article' }, { status: 500 })
+		return Response.json({ error: 'Failed to get article' }, { status: 500 })
 	}
 }
 
 // 更新文章
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params
 
 	// 验证登录
-	const session = request.cookies.get(SESSION_COOKIE)?.value
+	const session = getSession(request)
 	if (!session) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		return Response.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 	const user = await verifySession(session)
 	if (!user) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		return Response.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
 	try {
@@ -47,39 +58,39 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		const article = await updateArticle(slug, data)
 
 		if (!article) {
-			return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+			return Response.json({ error: 'Article not found' }, { status: 404 })
 		}
 
-		return NextResponse.json({ article })
+		return Response.json({ article })
 	} catch (error) {
 		console.error('Update article error:', error)
-		return NextResponse.json({ error: 'Failed to update article' }, { status: 500 })
+		return Response.json({ error: 'Failed to update article' }, { status: 500 })
 	}
 }
 
 // 删除文章
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params
 
 	// 验证登录
-	const session = request.cookies.get(SESSION_COOKIE)?.value
+	const session = getSession(request)
 	if (!session) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		return Response.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 	const user = await verifySession(session)
 	if (!user) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		return Response.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
 	try {
 		const success = await deleteArticle(slug)
 		if (!success) {
-			return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+			return Response.json({ error: 'Article not found' }, { status: 404 })
 		}
 
-		return NextResponse.json({ success: true })
+		return Response.json({ success: true })
 	} catch (error) {
 		console.error('Delete article error:', error)
-		return NextResponse.json({ error: 'Failed to delete article' }, { status: 500 })
+		return Response.json({ error: 'Failed to delete article' }, { status: 500 })
 	}
 }

@@ -1,13 +1,13 @@
 # 部署配置
 
-## 重要：Cloudflare Pages 自动部署
+## 重要：Cloudflare Workers 自动部署
 
-这个项目使用 **Cloudflare Pages** 连接 GitHub 仓库，**不是** GitHub Actions。
+这个项目使用 **Cloudflare Workers** 连接 GitHub 仓库自动部署。
 
-- 代码推送到 GitHub 后，Cloudflare 会自动拉取并构建部署
+- 代码推送到 GitHub 后，Cloudflare Workers 会自动拉取并构建部署
 - 不需要手动运行 `wrangler deploy`
-- 不需要关注 GitHub Actions 的状态
-- 构建日志在 Cloudflare Dashboard 的 Pages 项目中查看
+- 不需要 GitHub Actions
+- 构建日志在 Cloudflare Dashboard 的 Workers 项目中查看
 
 ## 技术栈
 

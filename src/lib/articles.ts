@@ -1,5 +1,4 @@
 // 文章相关的数据库和 R2 操作
-import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 // D1 和 R2 类型
 interface D1Database {
@@ -20,6 +19,14 @@ interface R2Object {
 	body: ReadableStream
 	text(): Promise<string>
 	httpMetadata?: { contentType?: string }
+}
+
+// 从 globalThis 获取 Cloudflare context
+const cloudflareContextSymbol = Symbol.for('__cloudflare-context__')
+
+function getCloudflareEnv(): { DB?: D1Database; BUCKET?: R2Bucket } | null {
+	const ctx = (globalThis as any)[cloudflareContextSymbol]
+	return ctx?.env || null
 }
 
 export interface Article {
@@ -73,11 +80,12 @@ function rowToArticle(row: ArticleRow): Article {
 }
 
 // 获取 D1 和 R2
-async function getBindings(): Promise<{ db: D1Database | null; bucket: R2Bucket | null }> {
-	/* eslint-disable @typescript-eslint/no-explicit-any */
+function getBindings(): { db: D1Database | null; bucket: R2Bucket | null } {
 	try {
-		const ctx = await getCloudflareContext({ async: true })
-		const env = ctx.env as { DB?: D1Database; BUCKET?: R2Bucket }
+		const env = getCloudflareEnv()
+		if (!env) {
+			return { db: null, bucket: null }
+		}
 		return {
 			db: env.DB || null,
 			bucket: env.BUCKET || null,

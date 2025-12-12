@@ -1,7 +1,6 @@
 // D1 数据库操作
 // D1 ID: 69297e0b-6da4-4cb8-b349-80891d0fbb4a
 
-import { getCloudflareContext } from '@opennextjs/cloudflare'
 import type { DbUser } from '@/hooks/use-user'
 
 // D1 数据库类型
@@ -30,11 +29,14 @@ interface D1ExecResult {
 	duration: number
 }
 
+// 从 globalThis 获取 Cloudflare context
+const cloudflareContextSymbol = Symbol.for('__cloudflare-context__')
+
 // 获取 D1 数据库实例
-export async function getDB(): Promise<D1Database | null> {
+export function getDB(): D1Database | null {
 	try {
-		const { env } = await getCloudflareContext({ async: true })
-		return (env as any).DB as D1Database | null
+		const ctx = (globalThis as any)[cloudflareContextSymbol]
+		return ctx?.env?.DB || null
 	} catch {
 		// 本地开发或非 Cloudflare 环境
 		return null

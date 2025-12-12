@@ -1,16 +1,17 @@
 // R2 图片代理 API
-import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 export const runtime = 'edge'
+
+// 从 globalThis 获取 Cloudflare context
+const cloudflareContextSymbol = Symbol.for('__cloudflare-context__')
 
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
 	const { path } = await params
 	const key = path.join('/')
 
 	try {
-		const ctx = await getCloudflareContext({ async: true })
-		const env = ctx.env as { BUCKET?: any }
-		const bucket = env.BUCKET
+		const ctx = (globalThis as any)[cloudflareContextSymbol]
+		const bucket = ctx?.env?.BUCKET
 
 		if (!bucket) {
 			return Response.json({ error: 'Bucket not available' }, { status: 500 })

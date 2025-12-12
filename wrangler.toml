@@ -21,7 +21,7 @@ bucket_name = "0n0"
 
 # 环境变量
 [vars]
-GITHUB_CLIENT_ID = "Iv23liYJ9CdbfLjiW1TB"
+GITHUB_CLIENT_ID = "Ov23liR0PKlquF5tdTnM"
 GITHUB_ALLOWED_USER = "Villode"
 NEXT_PUBLIC_SITE_URL = "https://0n0.uk"
 # GITHUB_CLIENT_SECRET 需要通过 wrangler secret 设置，不要放在代码里

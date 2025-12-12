@@ -1,9 +1,10 @@
 // D1 数据库操作
 // D1 ID: 69297e0b-6da4-4cb8-b349-80891d0fbb4a
 
-import type { DbUser } from './cf-auth'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
+import type { DbUser } from '@/hooks/use-user'
 
-// D1 数据库类型（Cloudflare Workers 环境）
+// D1 数据库类型
 export interface D1Database {
 	prepare(query: string): D1PreparedStatement
 	batch<T = unknown>(statements: D1PreparedStatement[]): Promise<D1Result<T>[]>
@@ -27,6 +28,17 @@ interface D1Result<T = unknown> {
 interface D1ExecResult {
 	count: number
 	duration: number
+}
+
+// 获取 D1 数据库实例
+export async function getDB(): Promise<D1Database | null> {
+	try {
+		const { env } = await getCloudflareContext()
+		return (env as any).DB as D1Database | null
+	} catch {
+		// 本地开发或非 Cloudflare 环境
+		return null
+	}
 }
 
 // 初始化数据库表

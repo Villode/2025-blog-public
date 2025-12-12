@@ -1,7 +1,14 @@
-// 用户状态 Hook
+// 用户状态 Hook（基于简单密码认证）
 import { create } from 'zustand'
 import { useEffect } from 'react'
-import type { DbUser } from '@/lib/cf-auth'
+
+export interface DbUser {
+	id: string
+	email: string
+	role: 'admin' | 'user'
+	createdAt?: string
+	lastLoginAt?: string
+}
 
 interface UserState {
 	user: DbUser | null
@@ -17,33 +24,22 @@ export const useUserStore = create<UserState>((set, get) => ({
 	authenticated: false,
 	loading: true,
 	error: null,
-	
+
 	fetchUser: async () => {
 		try {
 			set({ loading: true, error: null })
-			
-			// 开发环境检查本地模拟登录
-			if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-				const devAuth = localStorage.getItem('dev_auth')
-				if (devAuth === 'admin') {
-					set({
-						user: {
-							id: 'dev-admin',
-							email: 'admin@localhost',
-							role: 'admin',
-							createdAt: new Date().toISOString(),
-							lastLoginAt: new Date().toISOString()
-						},
-						authenticated: true,
-						loading: false
-					})
-					return
-				}
+
+			const token = localStorage.getItem('admin_token')
+			if (!token) {
+				set({ user: null, authenticated: false, loading: false })
+				return
 			}
-			
-			const res = await fetch('/api/auth/me')
+
+			const res = await fetch('/api/auth/me', {
+				headers: { Authorization: `Bearer ${token}` }
+			})
 			const data = await res.json()
-			
+
 			set({
 				user: data.user,
 				authenticated: data.authenticated,
@@ -58,7 +54,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 			})
 		}
 	},
-	
+
 	isAdmin: () => {
 		const { user } = get()
 		return user?.role === 'admin'

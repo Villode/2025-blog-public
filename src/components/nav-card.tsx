@@ -26,9 +26,10 @@ import { useSize } from '@/hooks/use-size'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import { HomeDraggableLayer } from '@/app/(home)/home-draggable-layer'
 import { useFullscreenStore } from '@/hooks/use-fullscreen'
-import { useAuthStore } from '@/hooks/use-auth'
+import { useAdmin } from '@/hooks/use-admin'
 import { toast } from 'sonner'
 import { X } from 'lucide-react'
+import { useAuthStore } from '@/hooks/use-auth'
 
 // PC端导航列表
 const pcList = [

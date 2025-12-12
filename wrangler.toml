@@ -1,7 +1,7 @@
 # wrangler.toml
 name = '0n0'
 compatibility_date = "2024-12-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "unsafe_eval"]
 main = ".open-next/worker.js"
 
 [assets]

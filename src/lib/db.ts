@@ -1,7 +1,7 @@
 // D1 数据库操作
 // D1 ID: 69297e0b-6da4-4cb8-b349-80891d0fbb4a
 
-import type { DbUser } from './auth'
+import type { DbUser } from './cf-auth'
 
 // D1 数据库类型（Cloudflare Workers 环境）
 export interface D1Database {

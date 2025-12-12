@@ -6,6 +6,8 @@
 		"dev": "next dev --turbopack -p 2025",
 		"svg": "node scripts/gen-svgs-index.js",
 		"build": "next build --turbopack",
+		"build:cf": "npx opennextjs-cloudflare build",
+		"deploy": "npm run build:cf && npx wrangler deploy",
 		"start": "next start",
 		"format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\" \"*.{ts,js,json}\""
 	},
@@ -31,6 +33,7 @@
 		"zustand": "^5.0.8"
 	},
 	"devDependencies": {
+		"@opennextjs/cloudflare": "^1.14.5",
 		"@svgr/webpack": "^8.1.0",
 		"@tailwindcss/postcss": "^4",
 		"@types/node": "^20",
